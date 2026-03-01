@@ -31,9 +31,6 @@ url: ""
 github:
   username: retroarab
 
-twitter:
-  username: twitter_username # change to your Twitter username
-
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
@@ -100,7 +97,7 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: /assets/avatar/bunapoza2.jpg
+avatar: /assets/avatar/bunapoza2.png
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
