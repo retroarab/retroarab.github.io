@@ -1,16 +1,15 @@
 ---
-title: "ROCSC Final 2026 — Web Solves"
+title: "ROCSC Final Web Solves"
 date: 2026-05-13 12:00:00 +0300
 tags: [CTF, ROCSC2026, Web]
 categories: [CTF, Writeups]
 ctf: "ROCSC Finals 2026"
 ---
 
-These are polished notes / writeups for the three ROCSC Finals 2026 web challenges :
+## Overview
 
-- `Underground Forum`
-- `depressionfest` 
-- `zeroxss`
+This post covers web challenges from **ROCSC Final 2026**.
+
 
 
 ## Underground Forum

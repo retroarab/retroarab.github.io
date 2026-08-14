@@ -1,0 +1,119 @@
+---
+layout: default
+refactor: true
+---
+
+{% include lang.html %}
+
+{% assign all_pinned = site.posts | where: 'pin', 'true' %}
+{% assign all_normal = site.posts | where_exp: 'item', 'item.pin != true and item.hidden != true' %}
+
+{% assign posts = '' | split: '' %}
+
+{% assign visible_start = paginator.page | minus: 1 | times: paginator.per_page %}
+{% assign visible_end = visible_start | plus: paginator.per_page %}
+
+{% if all_pinned.size > visible_start %}
+  {% if all_pinned.size > visible_end %}
+    {% assign pinned_size = paginator.per_page %}
+  {% else %}
+    {% assign pinned_size = all_pinned.size | minus: visible_start %}
+  {% endif %}
+
+  {% for i in (visible_start..all_pinned.size) limit: pinned_size %}
+    {% assign posts = posts | push: all_pinned[i] %}
+  {% endfor %}
+{% else %}
+  {% assign pinned_size = 0 %}
+{% endif %}
+
+{% assign normal_size = paginator.posts | size | minus: pinned_size %}
+
+{% if normal_size > 0 %}
+  {% if pinned_size > 0 %}
+    {% assign normal_start = 0 %}
+  {% else %}
+    {% assign normal_start = visible_start | minus: all_pinned.size %}
+  {% endif %}
+
+  {% assign normal_end = normal_start | plus: normal_size | minus: 1 %}
+
+  {% for i in (normal_start..normal_end) %}
+    {% assign posts = posts | push: all_normal[i] %}
+  {% endfor %}
+{% endif %}
+
+<ol id="post-list" class="post-list-arxiv flex-grow-1 px-xl-1" reversed>
+  {% for post in posts %}
+    <li class="post-entry{% if post.pin %} pinned{% endif %}">
+      <a href="{{ post.url | relative_url }}" class="post-entry-link">
+        <time datetime="{{ post.date | date_to_xmlschema }}" class="post-date">
+          {{- post.date | date: '%Y-%m-%d' -}}
+        </time>
+        <span class="post-title">{{ post.title }}</span>
+        {% if post.pin %}<span class="post-pin" title="{{ site.data.locales[lang].post.pin_prompt }}">★</span>{% endif %}
+      </a>
+
+      {% assign tag_list = post.categories | concat: post.tags | uniq %}
+      {% if tag_list.size > 0 %}
+        <span class="post-tags">[{% for tag in tag_list %}{{ tag | downcase }}{% unless forloop.last %}, {% endunless %}{% endfor %}]</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>
+<!-- #post-list -->
+
+{% if paginator.total_pages > 1 %}
+  {% include post-paginator.html %}
+{% endif %}
+
+<style>
+  #post-list.post-list-arxiv {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 2rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  #post-list.post-list-arxiv .post-entry {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--main-border-color);
+  }
+  #post-list.post-list-arxiv .post-entry:last-child {
+    border-bottom: none;
+  }
+  #post-list.post-list-arxiv .post-entry-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  #post-list.post-list-arxiv .post-entry-link:hover .post-title {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  #post-list.post-list-arxiv .post-date {
+    display: block;
+    font-family: var(--bs-font-monospace, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
+    margin-bottom: 0.15rem;
+  }
+  #post-list.post-list-arxiv .post-title {
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--heading-color);
+  }
+  #post-list.post-list-arxiv .post-pin {
+    color: var(--text-muted-color);
+    margin-left: 0.4rem;
+    font-size: 0.85rem;
+  }
+  #post-list.post-list-arxiv .post-tags {
+    display: block;
+    color: var(--text-muted-color);
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 0.15rem;
+  }
+</style>

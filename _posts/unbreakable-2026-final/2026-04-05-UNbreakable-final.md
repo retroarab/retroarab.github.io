@@ -1,5 +1,5 @@
 ---
-title: "UNbreakable 2026 Final — CTF Write-Up"
+title: "UNbreakable 2026 Final Write-Ups"
 date: 2026-04-09 12:00:00 +0300
 tags: [CTF, UNbreakable2026]
 categories: [CTF, Writeups]

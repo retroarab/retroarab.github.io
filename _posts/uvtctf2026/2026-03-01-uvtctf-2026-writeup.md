@@ -1,5 +1,5 @@
 ---
-title: "UVTCTF 2026 — CTF Write-Up"
+title: "UVTCTF 2026 CTF Write-Ups"
 date: 2026-03-01 12:00:00 +0200
 tags: [CTF, UVTCTF2026]
 categories: [CTF, Writeups]

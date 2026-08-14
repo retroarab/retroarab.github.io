@@ -1,0 +1,340 @@
+<!-- The Side Bar (overrides jekyll-theme-chirpy's sidebar.html) -->
+
+<script>
+  (function () {
+    try {
+      var s = localStorage.getItem('sidebar-drawer-state');
+      if (!s) return;
+      if (s === 'hidden') document.documentElement.classList.add('sidebar-user-hidden');
+      else if (s === 'open') document.documentElement.classList.add('sidebar-user-open');
+    } catch (e) {}
+  })();
+</script>
+
+<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end">
+  <header class="profile-wrapper">
+    <a href="{{ '/' | relative_url }}" id="avatar" class="rounded-circle">
+      {%- if site.avatar != empty and site.avatar -%}
+        {%- capture avatar_url -%}
+          {% include media-url.html src=site.avatar %}
+        {%- endcapture -%}
+        <img src="{{- avatar_url -}}" width="112" height="112" alt="avatar" onerror="this.style.display='none'">
+      {%- endif -%}
+    </a>
+
+    <a class="site-title d-block" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <p class="site-subtitle fst-italic mb-0">{{ site.tagline }}</p>
+  </header>
+  <!-- .profile-wrapper -->
+
+  <nav class="flex-column flex-grow-1 w-100 ps-0">
+    <ul class="nav">
+      <!-- home -->
+      <li class="nav-item{% if page.layout == 'home' %}{{ " active" }}{% endif %}">
+        <a href="{{ '/' | relative_url }}" class="nav-link">
+          <i class="fa-fw fas fa-home"></i>
+          <span>{{ site.data.locales[include.lang].tabs.home | upcase }}</span>
+        </a>
+      </li>
+      <!-- the real tabs -->
+      {% for tab in site.tabs %}
+        <li class="nav-item{% if tab.url == page.url %}{{ " active" }}{% endif %}">
+          <a href="{{ tab.url | relative_url }}" class="nav-link">
+            <i class="fa-fw {{ tab.icon }}"></i>
+            {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
+
+            <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
+          </a>
+        </li>
+        <!-- .nav-item -->
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="sidebar-bottom d-flex flex-wrap align-items-center w-100">
+    {% unless site.theme_mode == 'light' or site.theme_mode == 'dark' %}
+      {%- capture icon_system -%}
+        <i class="fa-solid fa-display" data-theme-mode="system"></i>
+      {%- endcapture -%}
+
+      {%- capture icon_light -%}
+        <i class="fa-regular fa-sun" data-theme-mode="light"></i>
+      {%- endcapture -%}
+
+      {%- capture icon_dark -%}
+        <i class="fa-regular fa-moon" data-theme-mode="dark"></i>
+      {%- endcapture -%}
+
+      <div class="btn-group dropup">
+        <button
+          type="button"
+          class="btn btn-link nav-link"
+          aria-label="Switch Mode"
+          id="mode-toggle"
+          data-bs-toggle="dropdown"
+        >
+          {{- icon_light -}}
+          {{- icon_dark -}}
+          {{- icon_system -}}
+        </button>
+        <ul class="dropdown-menu rounded-3 mb-1 p-1">
+          <li>
+            <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="light">
+              {{- icon_light -}}
+              {{- site.data.locales[lang].theme.light -}}
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="dark">
+              {{- icon_dark -}}
+              {{- site.data.locales[lang].theme.dark -}}
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item d-flex align-items-center" type="button" data-theme-mode="system">
+              {{- icon_system -}}
+              {{- site.data.locales[lang].theme.system -}}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {% if site.data.contact.size > 0 %}
+        <span class="icon-border"></span>
+      {% endif %}
+    {% endunless %}
+
+    {% for entry in site.data.contact %}
+      {%- assign url = null -%}
+
+      {% case entry.type %}
+        {% when 'github', 'twitter' %}
+          {%- unless site[entry.type].username -%}
+            {%- continue -%}
+          {%- endunless -%}
+          {%- capture url -%}
+            https://{{ entry.type }}.com/{{ site[entry.type].username }}
+          {%- endcapture -%}
+        {% when 'email' %}
+          {%- unless site.social.email -%}
+            {%- continue -%}
+          {%- endunless -%}
+          {%- assign email = site.social.email | split: '@' -%}
+          {%- capture url -%}
+            javascript:void(location.href = 'mailto:' + ['{{ email[0] }}','{{ email[1] }}'].join('@'))
+          {%- endcapture -%}
+        {% when 'rss' %}
+          {% assign url = '/feed.xml' | relative_url %}
+        {% else %}
+          {% assign url = entry.url %}
+      {% endcase %}
+
+      {% if url %}
+        <a
+          href="{{ url }}"
+          aria-label="{{ entry.type }}"
+          {% assign link_types = '' %}
+
+          {% unless entry.noblank %}
+            target="_blank"
+            {% assign link_types = 'noopener noreferrer' %}
+          {% endunless %}
+
+          {% if entry.type == 'mastodon' %}
+            {% assign link_types = link_types | append: ' me' | strip %}
+          {% endif %}
+
+          {% unless link_types == empty %}
+            rel="{{ link_types }}"
+          {% endunless %}
+        >
+          <i class="{{ entry.icon }}"></i>
+        </a>
+      {% endif %}
+    {% endfor %}
+
+    <button
+      type="button"
+      id="sidebar-collapse-btn"
+      class="sidebar-collapse-btn"
+      aria-label="Hide sidebar"
+      aria-controls="sidebar"
+    >
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+  </div>
+  <!-- .sidebar-bottom -->
+</aside>
+<!-- #sidebar -->
+
+<button
+  type="button"
+  id="sidebar-reveal-pill"
+  class="sidebar-reveal-pill"
+  aria-label="Show sidebar"
+  aria-controls="sidebar"
+>
+  <i class="fa-solid fa-chevron-right"></i>
+</button>
+
+<style>
+  /* Smooth slide on all breakpoints */
+  #sidebar {
+    transition: transform 0.35s ease;
+  }
+  @media (min-width: 850px) {
+    #main-wrapper {
+      transition: margin-left 0.35s ease;
+    }
+  }
+
+  /* Replace Chirpy's mobile hamburger with our unified toggle */
+  #sidebar-trigger {
+    display: none !important;
+  }
+
+  /* Right panel disabled site-wide; main expands to full width */
+  #panel-wrapper {
+    display: none !important;
+  }
+  #main-wrapper > .container > .row > main {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Collapse chevron sits at the right end of the bottom bar */
+  #sidebar-collapse-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--sidebar-btn-bg);
+    color: var(--sidebar-btn-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: color 0.35s ease, background-color 0.35s ease;
+  }
+  #sidebar-collapse-btn:not(:focus-visible) {
+    box-shadow: var(--sidebar-border-color) 0 0 0 1px;
+  }
+  #sidebar-collapse-btn:hover {
+    background-color: var(--sidebar-hover-bg);
+    color: var(--sidebar-active-color);
+  }
+  #sidebar-collapse-btn i {
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+
+  /* Floating reveal pill on the left edge */
+  #sidebar-reveal-pill {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.4rem;
+    height: 3.5rem;
+    padding: 0;
+    border: none;
+    border-radius: 0 999px 999px 0;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-btn-color);
+    box-shadow: var(--sidebar-border-color) 1px 0 6px -2px;
+    z-index: 1030;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.35s ease, background-color 0.35s ease;
+  }
+  #sidebar-reveal-pill:hover {
+    color: var(--sidebar-active-color);
+    background-color: var(--sidebar-hover-bg);
+  }
+  #sidebar-reveal-pill i {
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  /* Desktop (>=850px): sidebar shown by default; hide when user collapses */
+  @media (min-width: 850px) {
+    html.sidebar-user-hidden #sidebar {
+      transform: translateX(-260px);
+      -webkit-transform: translateX(-260px);
+    }
+    html.sidebar-user-hidden #main-wrapper {
+      margin-left: 0;
+    }
+    html.sidebar-user-hidden #sidebar-reveal-pill {
+      display: flex;
+    }
+  }
+  @media (min-width: 1650px) {
+    html.sidebar-user-hidden #sidebar {
+      transform: translateX(-300px);
+      -webkit-transform: translateX(-300px);
+    }
+  }
+
+  /* Small screens (<850px): sidebar hidden by default; open when user opens */
+  @media (max-width: 849.98px) {
+    #sidebar-reveal-pill {
+      display: flex;
+    }
+    html.sidebar-user-open #sidebar {
+      transform: translateX(0);
+      -webkit-transform: translateX(0);
+    }
+    html.sidebar-user-open #main-wrapper {
+      transform: translateX(260px);
+      -webkit-transform: translateX(260px);
+    }
+    html.sidebar-user-open #sidebar-reveal-pill {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var html = document.documentElement;
+    var LG = 850;
+    var STORAGE_KEY = 'sidebar-drawer-state';
+
+    function isDesktop() {
+      return window.matchMedia('(min-width: ' + LG + 'px)').matches;
+    }
+    function save(state) {
+      try { localStorage.setItem(STORAGE_KEY, state); } catch (e) {}
+    }
+    function hide() {
+      if (isDesktop()) {
+        html.classList.add('sidebar-user-hidden');
+        html.classList.remove('sidebar-user-open');
+      } else {
+        html.classList.remove('sidebar-user-open');
+      }
+      save('hidden');
+    }
+    function show() {
+      if (isDesktop()) {
+        html.classList.remove('sidebar-user-hidden');
+      } else {
+        html.classList.add('sidebar-user-open');
+        html.classList.remove('sidebar-user-hidden');
+      }
+      save('open');
+    }
+
+    var collapseBtn = document.getElementById('sidebar-collapse-btn');
+    var revealBtn = document.getElementById('sidebar-reveal-pill');
+    if (collapseBtn) collapseBtn.addEventListener('click', hide);
+    if (revealBtn) revealBtn.addEventListener('click', show);
+  })();
+</script>
